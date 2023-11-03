@@ -1,1 +1,3 @@
-reduce(true);
+p(a) >= false+a;
+xd(z) >= p(z);
+display(p(false)+xd(true));

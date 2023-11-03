@@ -21,5 +21,5 @@ if __name__ == '__main__':
                 # Exportar el AST como imagen
                 ast.to_png_with_pydot("output.png")
                 # Visitar el AST para evaluarlo
-                #t = ASTTraverser()
-                #t.visit(ast)
+                t = ASTTraverser()
+                t.visit(ast)

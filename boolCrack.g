@@ -6,23 +6,20 @@ expresion:
     logicalexpression '\;'
     | funtioncreate '\;'
     | macthcreation '\;'
-    | reduce '\;'
     | display '\;'
     | '\;'
     | expresion expresion
     ;
 
 logicalexpression:
-     OPAR logicalexpression CPAR
-    | negation
+     parenle
     | logicalterminal
-    | name
     | funcioncall
     | conditionals
-    |logicalexpression logicaloperation logicalexpression
+    | logicaloperation
     ;
 
-reduce: REDUCE OPAR logicalexpression CPAR;
+parenle: OPAR logicalexpression CPAR;
 
 display: DISPLAY OPAR  logicalexpression CPAR;
 
@@ -31,7 +28,7 @@ conditionals:
     | if
     ;
 
-macthcall: name '\[' logicalexpression '\]';
+macthcall: ID '\[' logicalexpression '\]';
 
 localmactharguments: 
     OPAR logicalexpression CPAR '=>' logicalexpression
@@ -52,15 +49,13 @@ funtioncallarguments:
     | funtioncallarguments ',' funtioncallarguments
     ;
 
-name: ID;
-
 funcioncall: 
-    name OPAR funtioncallarguments CPAR
-    | name OPAR CPAR
+    ID OPAR funtioncallarguments CPAR
+    | ID OPAR CPAR
     ;
 
 funtioncreatearguments:
-    name
+    ID
     | funtioncreatearguments ',' funtioncreatearguments
     ;
 
@@ -69,32 +64,36 @@ funtioncreate:
     | ID OPAR CPAR '>=' logicalexpression
     ;
 
-negation: '!' OPAR logicalexpression CPAR;
 
 logicalterminal:
     TRUE
     | FALSE
     | T0
     | T1
+    | ID
     ;
 
 logicaloperation:
-    and
-    | or
-    | imp
+    negation
+    | ands
+    | ors
+    | imps
+    | doubleimps
     ;
 
-and:    AND1
-        |AND2
+negation: '!' OPAR logicalexpression CPAR;
+
+ands:    logicalexpression AND1 logicalexpression
+        | logicalexpression AND2 logicalexpression
         ;
 
-or:     OR1
-        |OR2
+ors:     logicalexpression OR1 logicalexpression
+        |logicalexpression OR2 logicalexpression
         ;
 
-imp:    IMP;
+imps:    logicalexpression IMP logicalexpression;
 
-doubleimp: DIMP;
+doubleimps: DIMP;
 
 //elementos
 
