@@ -25,7 +25,7 @@ display: DISPLAY OPAR  logicalexpression CPAR;
 
 conditionals:
      macthcall
-    | if
+    | ifs
     ;
 
 macthcall: ID '\[' logicalexpression '\]';
@@ -39,9 +39,9 @@ macthcreation:
     ID '>=' '{' logicalexpression ',' logicalexpression ',' logicalexpression '}'
     | ID '>=' '{' localmactharguments ',' '_:' logicalexpression '}'
     ;
-if: 
+ifs: 
      OPAR logicalexpression CPAR '\?' logicalexpression '\:' logicalexpression
-    | OPAR logicalexpression CPAR '\?' logicalexpression '\|' if
+    | OPAR logicalexpression CPAR '\?' logicalexpression '\|' ifs
     ;
 
 funtioncallarguments: 

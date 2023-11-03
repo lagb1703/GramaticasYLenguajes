@@ -50,7 +50,7 @@ class ASTTraverser(object):
     def logicaloperation(self, tree):
         self.visit(tree.tail[0])
         first = self.valores.pop()
-        if first in self.VERDADERO or first in self.FALSO or (first[0] and first[-1]):
+        if first in self.VERDADERO or first in self.FALSO or (first[0] == '(' and first[-1] == ')'):
             self.valores.append(first)
         else:
             self.valores.append(f'({first})')
@@ -132,17 +132,27 @@ class ASTTraverser(object):
         if tree.tail[0] in ASTTraverser.VERDADERO or tree.tail[0] in ASTTraverser.FALSO:
             self.valores.append(tree.tail[0])
         else:
-            index = 0
-            for i in self.funciones[self.pila[-1][0]][0]:
-                if i == tree.tail[0]:
+            indexi = 1
+            indexj = 0
+            for i in range(1, len(self.pila) + 1):
+                indexj = 0
+                solucion = False
+                for j in self.funciones[self.pila[-i][0]][0]:
+                    #print(" ", j, tree.tail[0])
+                    if j == tree.tail[0]:
+                        solucion = True
+                        break
+                    indexj += 1
+                if solucion:
                     break
-                index += 1
-            if len(self.pila[-1])-1 < index:
-                return
+                indexi += 1
+            # print(indexi, indexj, self.pila[-indexi])
+            if len(self.pila[-indexi])-1 < indexj:
+                raise Exception(f"{self.pila[-indexi][0]} TIENE UN CONFICTO CON SUS ARGUMENTOS")
             # print(self.funciones[self.pila[-1][0]][0][index])
             # print(self.pila[-1])
             # print(index)
-            self.valores.append(self.pila[-1][index + 1])
+            self.valores.append(self.pila[-indexi][indexj + 1])
             #self.valores.append(ASTTraverser.VERDADERO[0])
     
     def display(self, tree):
@@ -169,7 +179,7 @@ class ASTTraverser(object):
         for i in tree.tail:
             if i != ',':
                 self.visit(i)
-                if i.head == "logicalexpression":
+                if i.head == "logicalexpression" and len(self.valores) > 0:
                     self.pila[-1].append(self.valores.pop())
     
     def funcioncall(self, tree):
@@ -183,6 +193,17 @@ class ASTTraverser(object):
                 raise Exception(f'{tree.tail[0]} LE HA SIDO PROPOSIONADO {len(self.pila[-1]) - 1} SIENDO QUE NECESITA {len(funcion[0])}')
         self.visit(funcion[1])
         self.pila.pop()
+
+    def conditionals(self, tree):
+        self.visit(tree.tail[0])
+
+    def ifs(self, tree):
+        self.visit(tree.tail[1])
+        first = self.valores.pop()
+        if first in ASTTraverser.VERDADERO:
+            self.visit(tree.tail[4])
+        else:
+            self.visit(tree.tail[-1])
 
 
    

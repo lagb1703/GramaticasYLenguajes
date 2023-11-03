@@ -1,3 +1,2 @@
-p(a) >= false+a;
-xd(z) >= p(z);
-display(p(false)+xd(true));
+condicional(a) >= ((a)?a+a:a)+true;
+display(condicional(false));
