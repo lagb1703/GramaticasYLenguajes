@@ -1,2 +1,0 @@
-condicional(a) >= ((a)?a+a:a)+true;
-display(condicional(false));

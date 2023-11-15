@@ -31,13 +31,13 @@ conditionals:
 macthcall: ID '\[' logicalexpression '\]';
 
 localmactharguments: 
-    OPAR logicalexpression CPAR '=>' logicalexpression
+    OPAR logicalexpression CPAR '\:' logicalexpression
     | localmactharguments ',' localmactharguments
     ;
 
 macthcreation: 
     ID '>=' '{' logicalexpression ',' logicalexpression ',' logicalexpression '}'
-    | ID '>=' '{' localmactharguments ',' '_:' logicalexpression '}'
+    | ID '>=' '{' localmactharguments ',' '_\:=' logicalexpression '}'
     ;
 ifs: 
      OPAR logicalexpression CPAR '\?' logicalexpression '\:' logicalexpression

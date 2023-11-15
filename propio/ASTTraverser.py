@@ -16,6 +16,7 @@ class ASTTraverser(object):
 
     def __init__(self):
         self.funciones = {}
+        self.macths = {}
         self.pila = []
         self.valores = []
 
@@ -38,8 +39,9 @@ class ASTTraverser(object):
         for i in tree.tail:
             if i != ';':
                 self.valores = []
+                self.pila = []
                 self.visit(i)
-                #print(self.funciones)
+                #print(self.macths)
 
     def start(self, tree):
         self.visit(tree.tail[0])
@@ -85,7 +87,7 @@ class ASTTraverser(object):
         elif f'!({first})' == second or f'!({second})' == first:
             self.valores.append(ASTTraverser.VERDADERO[0])
         else:
-            self.valores.append(tree.tail.join())
+            self.valores.append(f'{first}+{second}')
 
     def imps(self, tree):
         self.visit(tree.tail[0])
@@ -137,8 +139,9 @@ class ASTTraverser(object):
             for i in range(1, len(self.pila) + 1):
                 indexj = 0
                 solucion = False
+                print(self.funciones[self.pila[-i][0]][0])
                 for j in self.funciones[self.pila[-i][0]][0]:
-                    #print(" ", j, tree.tail[0])
+                    print(" ", j, tree.tail[0])
                     if j == tree.tail[0]:
                         solucion = True
                         break
@@ -146,12 +149,10 @@ class ASTTraverser(object):
                 if solucion:
                     break
                 indexi += 1
-            # print(indexi, indexj, self.pila[-indexi])
-            if len(self.pila[-indexi])-1 < indexj:
-                raise Exception(f"{self.pila[-indexi][0]} TIENE UN CONFICTO CON SUS ARGUMENTOS")
-            # print(self.funciones[self.pila[-1][0]][0][index])
-            # print(self.pila[-1])
-            # print(index)
+            print(indexi, indexj, self.pila)
+            if len(self.pila) < indexi or len(self.pila[-1]) == 1:
+                self.valores.append(tree.tail[0])
+                return
             self.valores.append(self.pila[-indexi][indexj + 1])
             #self.valores.append(ASTTraverser.VERDADERO[0])
     
@@ -204,6 +205,44 @@ class ASTTraverser(object):
             self.visit(tree.tail[4])
         else:
             self.visit(tree.tail[-1])
+
+    def macthcreation(self, tree):
+        if self.macths.get(tree.tail[0]):
+            raise Exception(f"{tree.tail[0]} YA HA SIDO CREADO")
+        ma = {}
+        if len(tree.tail) == 9:
+            self.visit(tree.tail[3])
+            self.visit(tree.tail[5])
+            self.visit(tree.tail[7])
+            ma['_'] = self.valores.pop()
+            ma["logicalexpression(logicalterminal('false'))"] = self.valores.pop()
+            ma["logicalexpression(logicalterminal('true'))"] = self.valores.pop()
+        else:
+            self.visit(tree.tail[-2])
+            ma['_'] = self.valores.pop()
+            self.visit(tree.tail[3])
+            for i in self.pila:
+                ma[i[0]] = i[1]
+        self.macths[tree.tail[0]] = ma
+
+
+    def localmactharguments(self, tree):
+        if tree.tail[0] == '(':
+            self.visit(tree.tail[-1])
+            self.pila.append([str(tree.tail[1]), self.valores.pop()])
+            return
+        for i in tree.tail:
+            pass
+            if i != ',':
+                self.visit(i)
+
+    def macthcall(self, tree):
+        if not(self.macths.get(tree.tail[0])):
+            raise Exception(f"{tree.tail[0]} NO HA SIDO CREADO")
+        ma = self.macths[tree.tail[0]]
+        print(ma['true'])
+        self.valores.append('true')
+        #self.valores.append(ma[str(tree.tail[2])])
 
 
    
